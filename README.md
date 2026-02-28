@@ -42,32 +42,6 @@ To empower students with practical technical skills and foster innovation throug
 
 Simple static web project named Circuit Breaker.
 
-## Description
-
-This repository contains a small front-end demo with HTML, CSS, and JavaScript.
-
-## Project Structure
-
-- index.html - Main page
-- script.js - JavaScript behaviour
-- style.css - Styles
-- Assets/ - Images and other static assets
-
-## Usage
-
-Open `index.html` in your browser (or serve the folder with a static server).
-
-Quick start with Node (optional):
-
-```bash
-npx serve .
-```
-
-## Development
-
-- Edit `index.html`, `script.js`, and `style.css` then refresh the browser.
-- Use a live-reload extension or `live-server` for convenience.
-
 ## License
 
 MIT
