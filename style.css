@@ -314,24 +314,24 @@ body {
 
 /* Color Modifiers */
 .c-green {
-  color: var(--green) !important;
+  color: #cfe0e2 !important;
   background: var(--green) !important;
   box-shadow: 0 0 8px var(--green) !important;
   text-shadow: 0 0 22px rgba(34, 211, 238, .55) !important;
 }
 
 .c-amber {
-  color: var(--amber) !important;
+  color: #cfe0e2 !important;
   background: var(--amber) !important;
   box-shadow: 0 0 8px var(--amber) !important;
   text-shadow: 0 0 22px rgba(245, 158, 11, .55) !important;
 }
 
 .c-cyan {
-  color: var(--cyan) !important;
+  color: #cfe0e2 !important;
   background: var(--cyan) !important;
   box-shadow: 0 0 8px var(--cyan) !important;
-  text-shadow: 0 0 22px rgba(0, 229, 255, .55) !important;
+  text-shadow: 0 0 22px rgba(104, 109, 109, 0.55) !important;
 }
 
 .c-plasma {
