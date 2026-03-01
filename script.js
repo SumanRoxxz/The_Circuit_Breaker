@@ -231,9 +231,6 @@ document.addEventListener('click', e => {
     });
 });
 
-/* ── THEME TOGGLE ── */
-document.getElementById('themeSw').addEventListener('click', function () { document.body.classList.toggle('light'); this.classList.toggle('on'); });
-
 /* ── NAV ── */
 window.goTo = (href, btn, e) => { ripple(btn, e); setTimeout(() => document.querySelector(href).scrollIntoView({ behavior: 'smooth' }), 120); };
 
