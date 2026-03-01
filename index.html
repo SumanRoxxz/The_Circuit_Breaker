@@ -4,70 +4,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Circuit Breakers | Electronics Club</title>
+    <title>The Circuit Breaker | Electronics Club</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link
-        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Exo+2:ital,wght@0,200;0,300;0,400;0,600;1,300&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <!-- CRT OVERLAY -->
+    <!-- LAYERS -->
+    <div class="crt-veil"></div>
     <div class="crt-overlay"></div>
-    <div id="easter-flash"></div>
-    <div id="crt-msg"></div>
+    <div id="crtFlash"></div>
+    <div id="crtTerm"></div>
+    <div class="vol"></div>
+    <div id="binRain"></div>
 
-    <!-- CURSOR -->
-    <div id="cur-dot"></div>
+    <!-- CURSORS -->
+    <div id="cur"></div>
     <div id="cur-ring"></div>
 
     <!-- CANVASES -->
-    <canvas id="c-pcb"></canvas>
-    <canvas id="c-scope"></canvas>
-    <canvas id="c-spark"></canvas>
+    <canvas id="cvBg"></canvas>
+    <canvas id="cvPar"></canvas>
+    <canvas id="cvScope"></canvas>
+    <canvas id="cvSpark"></canvas>
 
-    <!-- BINARY RAIN -->
-    <div id="bin-rain"></div>
+    <!-- AMBIENT AUDIO -->
+    <audio id="ambAudio" loop>
+        <source src="data:audio/wav;base64," type="audio/wav">
+    </audio>
+    <button id="audioBtn" title="Ambient Sound" onclick="toggleAudio()">🔇</button>
 
-    <!-- GRAVITY NOTIFICATION -->
-    <div id="grav-notif">⚡ LAB MODE ACTIVATED — ZERO GRAVITY ENABLED</div>
-
-    <!-- LOADER -->
-    <div id="loader">
-        <div class="ld-brand">⚡ TCB SYSTEMS</div>
-        <div class="led-row">
-            <div class="led led-r"></div>
-            <div class="led-label">PWR</div>
-            <div class="led led-g"></div>
-            <div class="led-label">SYS</div>
-            <div class="led led-b"></div>
-            <div class="led-label">NET</div>
-        </div>
-        <div class="ld-cap">
-            <div class="ld-plate"></div>
-            <div class="ld-bar">
-                <div class="ld-fill" id="ld-fill"></div>
+    <!-- BOOT SCREEN -->
+    <div id="boot">
+        <div class="boot-brand">THE CIRCUIT BREAKER</div>
+        <div class="boot-lines" id="bootLines">
+            <div class="bl">
+                <div class="bl-dot c-green"></div>
+                <span class="bl-key">SYSTEM KERNEL</span>
+                <span class="bl-val">◆ v4.2.7-TCB LOADED</span>
+                <span class="bl-ok c-green">■ OK</span>
             </div>
-            <div class="ld-plate"></div>
+            <div class="bl">
+                <div class="bl-dot c-amber"></div>
+                <span class="bl-key">POWER SYSTEMS</span>
+                <span class="bl-val">◆ 48V RAIL — NOMINAL</span>
+                <span class="bl-ok c-amber">■ ONLINE</span>
+            </div>
+            <div class="bl">
+                <div class="bl-dot c-cyan"></div>
+                <span class="bl-key">SIGNAL INTEGRITY</span>
+                <span class="bl-val">◆ SNR: 96.3 dB — STABLE</span>
+                <span class="bl-ok c-cyan">■ LOCKED</span>
+            </div>
+            <div class="bl">
+                <div class="bl-dot c-violet"></div>
+                <span class="bl-key">INNOVATION CORE</span>
+                <span class="bl-val">◆ NEURAL SYNC COMPLETE</span>
+                <span class="bl-ok c-violet">■ ACTIVE</span>
+            </div>
         </div>
-        <div class="ld-pct" id="ld-pct">0%</div>
-        <div class="ld-status" id="ld-status">INITIALIZING SYSTEMS...</div>
+        <div class="boot-prog">
+            <div class="boot-track">
+                <div class="boot-fill" id="bootFill"></div>
+            </div>
+            <div class="boot-pct" id="bootPct">0%</div>
+        </div>
     </div>
 
+    <!-- GRAVITY NOTIF -->
+    <div id="gravNotif">⚡ ZERO-GRAVITY SIMULATION — PHYSICS ENGINE ACTIVE</div>
+
     <!-- LAB PANEL -->
-    <div id="lab-panel">
-        <button class="btn btn-lab" id="lab-btn">⚡ ACTIVATE LAB MODE</button>
-        <button class="btn btn-reset" id="reset-btn">
-            ↩ RESET GRAVITY
-        </button>
+    <div id="labPanel">
+        <button class="btn btn-lab" id="labBtn">⚡ ACTIVATE ZERO-GRAVITY LAB</button>
+        <button class="btn btn-restore" id="resetBtn">↩
+            RESTORE GRAVITY</button>
+    </div>
+
+    <!-- MODAL -->
+    <div id="mOverlay" onclick="mClose(event)">
+        <div class="mBox">
+            <div class="mClose" onclick="mClose({target:document.getElementById('mOverlay')})">✕</div>
+            <div class="mTitle" id="mTitle"></div>
+            <div class="mBody" id="mBody"></div>
+        </div>
     </div>
 
     <!-- NAV -->
     <nav>
         <div class="nav-logo">
-            <span class="nav-logo-icon">⚡</span> THE CIRCUIT BREAKERS
+            <div class="nav-logo-hex">⚡</div>
+            CIRCUIT BREAKER
         </div>
         <ul class="nav-links">
             <li><a href="#about">ABOUT</a></li>
@@ -77,11 +108,10 @@
             <li><a href="#join">JOIN</a></li>
         </ul>
         <div class="nav-right">
-            <div class="led-row">
-                <div class="led led-g nav-live-led"></div>
-                <div class="led-label nav-live-label">LIVE</div>
+            <div class="pill">
+                <div class="pill-dot"></div>LAB ONLINE
             </div>
-            <div class="hw-switch" id="theme-sw" title="Dark / Light Mode"></div>
+            <div class="hw-sw" id="themeSw"></div>
         </div>
     </nav>
 
@@ -89,421 +119,453 @@
 
         <!-- ═══ HERO ═══ -->
         <section id="hero">
-            <!-- Energy pulse rings -->
-            <div class="pulse-ring"></div>
-            <div class="pulse-ring"></div>
-            <div class="pulse-ring"></div>
+            <div class="heroRings">
+                <div class="ring"></div>
+                <div class="ring"></div>
+                <div class="ring"></div>
+            </div>
 
-            <!-- 3D Chip SVG -->
-            <div class="chip-bg">
-                <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="100" y="100" width="200" height="200" fill="none" stroke="#4fc3f7" stroke-width="2" />
-                    <rect x="120" y="120" width="160" height="160" fill="none" stroke="#a78bfa" stroke-width="1" />
-                    <rect x="140" y="140" width="120" height="120" fill="none" stroke="#4fc3f7" stroke-width="1" />
-                    <!-- Pin traces -->
-                    <g stroke="#4fc3f7" stroke-width="1.5" opacity="0.8">
-                        <line x1="0" y1="140" x2="100" y2="140" />
-                        <line x1="0" y1="170" x2="100" y2="170" />
-                        <line x1="0" y1="200" x2="100" y2="200" />
-                        <line x1="0" y1="230" x2="100" y2="230" />
-                        <line x1="0" y1="260" x2="100" y2="260" />
-                        <line x1="300" y1="140" x2="400" y2="140" />
-                        <line x1="300" y1="170" x2="400" y2="170" />
-                        <line x1="300" y1="200" x2="400" y2="200" />
-                        <line x1="300" y1="230" x2="400" y2="230" />
-                        <line x1="300" y1="260" x2="400" y2="260" />
-                        <line x1="140" y1="0" x2="140" y2="100" />
-                        <line x1="170" y1="0" x2="170" y2="100" />
-                        <line x1="200" y1="0" x2="200" y2="100" />
-                        <line x1="230" y1="0" x2="230" y2="100" />
-                        <line x1="260" y1="0" x2="260" y2="100" />
-                        <line x1="140" y1="300" x2="140" y2="400" />
-                        <line x1="170" y1="300" x2="170" y2="400" />
-                        <line x1="200" y1="300" x2="200" y2="400" />
-                        <line x1="230" y1="300" x2="230" y2="400" />
-                        <line x1="260" y1="300" x2="260" y2="400" />
+            <!-- 3D Chip -->
+            <div class="chip3d">
+                <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <filter id="gf">
+                            <feGaussianBlur stdDeviation="2.5" result="b" />
+                            <feMerge>
+                                <feMergeNode in="b" />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+                        <radialGradient id="chipGlow" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="rgba(0,229,255,0.2)" />
+                            <stop offset="100%" stop-color="rgba(0,229,255,0)" />
+                        </radialGradient>
+                    </defs>
+                    <circle cx="250" cy="250" r="220" fill="url(#chipGlow)" />
+                    <rect x="115" y="115" width="270" height="270" fill="none" stroke="#00e5ff" stroke-width="2"
+                        filter="url(#gf)" />
+                    <rect x="138" y="138" width="224" height="224" fill="none" stroke="#a855f7" stroke-width="1" />
+                    <rect x="155" y="155" width="190" height="190" fill="rgba(0,229,255,.025)" />
+                    <g stroke="#a855f7" stroke-width=".5" opacity=".35">
+                        <line x1="155" y1="180" x2="345" y2="180" />
+                        <line x1="155" y1="205" x2="345" y2="205" />
+                        <line x1="155" y1="230" x2="345" y2="230" />
+                        <line x1="155" y1="255" x2="345" y2="255" />
+                        <line x1="155" y1="280" x2="345" y2="280" />
+                        <line x1="155" y1="305" x2="345" y2="305" />
+                        <line x1="180" y1="155" x2="180" y2="345" />
+                        <line x1="205" y1="155" x2="205" y2="345" />
+                        <line x1="230" y1="155" x2="230" y2="345" />
+                        <line x1="255" y1="155" x2="255" y2="345" />
+                        <line x1="280" y1="155" x2="280" y2="345" />
+                        <line x1="305" y1="155" x2="305" y2="345" />
                     </g>
-                    <!-- Internal grid -->
-                    <g stroke="#a78bfa" stroke-width="0.5" opacity="0.4">
-                        <line x1="140" y1="160" x2="260" y2="160" />
-                        <line x1="140" y1="180" x2="260" y2="180" />
-                        <line x1="140" y1="200" x2="260" y2="200" />
-                        <line x1="140" y1="220" x2="260" y2="220" />
-                        <line x1="140" y1="240" x2="260" y2="240" />
-                        <line x1="160" y1="140" x2="160" y2="260" />
-                        <line x1="180" y1="140" x2="180" y2="260" />
-                        <line x1="180" y1="140" x2="180" y2="260" />
-                        <line x1="200" y1="140" x2="200" y2="260" />
-                        <line x1="220" y1="140" x2="220" y2="260" />
-                        <line x1="240" y1="140" x2="240" y2="260" />
+                    <g stroke="#00e5ff" stroke-width="2" filter="url(#gf)">
+                        <line x1="0" y1="150" x2="115" y2="150" />
+                        <line x1="0" y1="180" x2="115" y2="180" />
+                        <line x1="0" y1="210" x2="115" y2="210" />
+                        <line x1="0" y1="240" x2="115" y2="240" />
+                        <line x1="0" y1="270" x2="115" y2="270" />
+                        <line x1="0" y1="300" x2="115" y2="300" />
+                        <line x1="0" y1="330" x2="115" y2="330" />
+                        <line x1="385" y1="150" x2="500" y2="150" />
+                        <line x1="385" y1="180" x2="500" y2="180" />
+                        <line x1="385" y1="210" x2="500" y2="210" />
+                        <line x1="385" y1="240" x2="500" y2="240" />
+                        <line x1="385" y1="270" x2="500" y2="270" />
+                        <line x1="385" y1="300" x2="500" y2="300" />
+                        <line x1="385" y1="330" x2="500" y2="330" />
+                        <line x1="150" y1="0" x2="150" y2="115" />
+                        <line x1="180" y1="0" x2="180" y2="115" />
+                        <line x1="210" y1="0" x2="210" y2="115" />
+                        <line x1="240" y1="0" x2="240" y2="115" />
+                        <line x1="270" y1="0" x2="270" y2="115" />
+                        <line x1="300" y1="0" x2="300" y2="115" />
+                        <line x1="330" y1="0" x2="330" y2="115" />
+                        <line x1="150" y1="385" x2="150" y2="500" />
+                        <line x1="180" y1="385" x2="180" y2="500" />
+                        <line x1="210" y1="385" x2="210" y2="500" />
+                        <line x1="240" y1="385" x2="240" y2="500" />
+                        <line x1="270" y1="385" x2="270" y2="500" />
+                        <line x1="300" y1="385" x2="300" y2="500" />
+                        <line x1="330" y1="385" x2="330" y2="500" />
                     </g>
-                    <circle cx="200" cy="200" r="8" fill="#4fc3f7" opacity="0.6" />
-                    <circle cx="200" cy="200" r="20" fill="none" stroke="#4fc3f7" stroke-width="1" opacity="0.3" />
+                    <circle cx="250" cy="250" r="12" fill="#00e5ff" opacity=".7" filter="url(#gf)" />
+                    <circle cx="250" cy="250" r="30" fill="none" stroke="#00e5ff" stroke-width="1" opacity=".3" />
+                    <circle cx="250" cy="250" r="55" fill="none" stroke="#a855f7" stroke-width=".5" opacity=".2" />
                 </svg>
             </div>
 
-            <div class="hero-badge">EST. 2018 &nbsp;·&nbsp; COLLEGE OF ENGINEERING &nbsp;·&nbsp; DEPT. OF ECE</div>
+            <div id="magLayer"></div>
+
+            <div class="hero-badge">CLASSIFICATION: INNOVATION-ALPHA ◆ EST. 2018</div>
             <h1 class="hero-title">
-                <span class="ht-1">ELECTRONICS</span>
-                <span class="ht-2">CLUB</span>
-                <span class="ht-tag">INNOVATE · BUILD · DOMINATE</span>
+                <span class="ht-main">ELECTRONICS<br>CLUB</span>
             </h1>
-            <p class="hero-sub">// WHERE CIRCUITS MEET CREATIVITY — THE CIRCUIT BREAKERS //</p>
+            <p class="hero-tag">Innovate. Engineer. Dominate.</p>
             <div class="hero-btns">
-                <button class="btn btn-blue" onclick="smoothTo('join',this,event)">JOIN THE CLUB</button>
-                <button class="btn btn-purple" onclick="smoothTo('projects',this,event)">VIEW PROJECTS</button>
+                <button class="btn btn-c" onclick="goTo('#join',this,event)">JOIN THE LAB</button>
+                <button class="btn btn-v" onclick="goTo('#projects',this,event)">EXPLORE PROJECTS</button>
             </div>
-            <div class="scroll-ind">
+            <div class="scroll-hint">
                 <span>SCROLL</span>
-                <div class="scroll-arrow"></div>
+                <div class="scroll-hint-arr"></div>
             </div>
         </section>
 
         <!-- ═══ ABOUT ═══ -->
         <section id="about">
-            <div class="glowing-divider"></div>
-            <br><br>
-            <div class="sec-hdr r">
-                <span class="sec-tag">// 01 — ABOUT THE CLUB</span>
+            <div class="sec-center rv">
+                <span class="sec-tag">// 01 — MISSION BRIEF</span>
                 <h2 class="sec-title">WHO WE ARE</h2>
                 <div class="sec-line"></div>
             </div>
-            <div class="about-wrap">
-                <div class="about-copy rl">
-                    <p>We are <span class="hl">The Circuit Breakers</span>, an elite community of engineers, makers, and
-                        innovators pushing the bleeding edge of electronics, embedded systems, and next-generation
-                        technology.</p>
-                    <p>From crafting intricate <span class="hl-g">PCB layouts</span> and launching autonomous drones to
-                        building neural prosthetics — we don't just learn electronics. <span class="hl">We live
-                            it.</span></p>
-                    <p>Our lab runs 24/7, powered by curiosity, espresso, and the relentless pursuit of building things
-                        that <span class="hl-g">actually work</span>. Join us and shape the future.</p>
+            <div class="about-grid">
+                <div class="about-text rvl">
+                    <p>We are <span class="hc">The Circuit Breaker</span> — an elite collective of engineers, hackers,
+                        and innovators rewriting the rulebook on applied electronics.</p>
+                    <p>From midnight <span class="hv">PCB sprints</span> to national-championship robotics battles, we
+                        operate where theory meets madness.</p>
+                    <p>Our lab runs 24/7. We survive on <span class="hg">curiosity, black coffee, and 48V rails</span>.
+                        Every project here is mission-critical.</p>
+                    <p class="m0">This is not a club. <span class="hc">This is a research division.</span>
+                    </p>
                 </div>
-                <div class="counters rr">
-                    <div class="cnt-card rz">
-                        <div class="cnt-num" data-target="250" data-suffix="+">000</div>
-                        <div class="cnt-label">ACTIVE MEMBERS</div>
+                <div class="stats rvr">
+                    <div class="sc rv">
+                        <div class="sc-led">
+                            <div class="sc-dot c-cyan"></div>
+                        </div>
+                        <div class="sc-num c-cyan" data-target="250" data-suffix="+">000</div>
+                        <div class="sc-lbl">ENGINEERS</div>
                     </div>
-                    <div class="cnt-card rz delay-1">
-                        <div class="cnt-num purple" data-target="87" data-suffix="+">000</div>
-                        <div class="cnt-label">PROJECTS BUILT</div>
+                    <div class="sc rv">
+                        <div class="sc-led">
+                            <div class="sc-dot c-violet"></div>
+                        </div>
+                        <div class="sc-num c-violet" data-target="94" data-suffix="+">000</div>
+                        <div class="sc-lbl">PROJECTS</div>
                     </div>
-                    <div class="cnt-card rz delay-2">
-                        <div class="cnt-num green" data-target="32" data-suffix="+">000</div>
-                        <div class="cnt-label">AWARDS WON</div>
+                    <div class="sc rv">
+                        <div class="sc-led">
+                            <div class="sc-dot c-green"></div>
+                        </div>
+                        <div class="sc-num c-green" data-target="38" data-suffix="+">000</div>
+                        <div class="sc-lbl">AWARDS</div>
                     </div>
-                    <div class="cnt-card rz delay-3">
-                        <div class="cnt-num" data-target="6" data-suffix="">0</div>
-                        <div class="cnt-label">YEARS ACTIVE</div>
+                    <div class="sc rv">
+                        <div class="sc-led">
+                            <div class="sc-dot c-amber"></div>
+                        </div>
+                        <div class="sc-num c-amber" data-target="7" data-suffix="">0</div>
+                        <div class="sc-lbl">YEARS ACTIVE</div>
                     </div>
                 </div>
             </div>
-            <br><br>
-            <div class="glowing-divider"></div>
         </section>
 
         <!-- ═══ PROJECTS ═══ -->
         <section id="projects">
-            <div class="sec-hdr r">
+            <div class="sec-center rv">
                 <span class="sec-tag">// 02 — PROJECT SHOWCASE</span>
                 <h2 class="sec-title">WHAT WE BUILD</h2>
                 <div class="sec-line"></div>
             </div>
             <div class="proj-grid">
 
-                <!-- ESP32 -->
-                <div class="proj-card r delay-05" data-tilt>
-                    <div class="wifi-pulse">
-                        <div class="wifi-dot"></div>
+                <div class="pc rv" data-tilt data-modal="esp32">
+                    <div class="wf">
+                        <div class="wf-c"></div>
+                        <div class="wf-r"></div>
+                        <div class="wf-r"></div>
+                        <div class="wf-r"></div>
                     </div>
-                    <div class="proj-top">
-                        <div class="proj-icon">🚗</div>
-                        <div class="proj-info">
-                            <h3>ESP32 WIFI CAR</h3>
-                            <span class="proj-badge">EMBEDDED SYSTEMS</span>
+                    <div class="ph">
+                        <div class="pi">🚗</div>
+                        <div class="pm">
+                            <h3>ESP32 WIFI SURVEILLANCE CAR</h3>
+                            <span class="badge">EMBEDDED SYSTEMS</span>
                         </div>
                     </div>
-                    <p class="proj-desc">Fully autonomous WiFi-controlled car powered by ESP32. Features real-time video
-                        streaming, obstacle avoidance via ultrasonic sensors, and a mobile dashboard UI over WebSocket.
-                    </p>
-                    <div class="proj-tags">
-                        <span class="proj-tag">ESP32</span>
-                        <span class="proj-tag">WebSocket</span>
-                        <span class="proj-tag">C++</span>
-                        <span class="proj-tag">WiFi</span>
+                    <p class="pd">Fully autonomous WiFi-controlled surveillance vehicle with real-time HD streaming,
+                        obstacle avoidance, and mobile-responsive WebSocket dashboard.</p>
+                    <div class="ptags"><span class="pt">ESP32</span><span class="pt">WebSocket</span><span
+                            class="pt">FreeRTOS</span><span class="pt">React</span></div>
+                    <div class="pfooter">
+                        <div class="pview" onclick="mOpen('esp32')">VIEW PROJECT →</div>
+                        <div class="pstatus">
+                            <div class="psdot"></div>ACTIVE
+                        </div>
                     </div>
                 </div>
 
-                <!-- Drone -->
-                <div class="proj-card r delay-1" data-tilt>
-                    <div class="proj-top">
-                        <div class="proj-icon">🤖</div>
-                        <div class="proj-info">
-                            <h3>AUTONOMOUS DRONE</h3>
-                            <span class="proj-badge">ROBOTICS / AI</span>
+                <div class="pc rv" data-tilt data-modal="drone">
+                    <div class="drProp">
+                        <svg viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <ellipse cx="23" cy="23" rx="21" ry="5" stroke="#00e5ff" stroke-width="1.5" opacity=".6" />
+                            <ellipse cx="23" cy="23" rx="5" ry="21" stroke="#a855f7" stroke-width="1.5" opacity=".6" />
+                            <circle cx="23" cy="23" r="4" fill="#00e5ff" opacity=".8" />
+                        </svg>
+                    </div>
+                    <div class="ph">
+                        <div class="pi">🤖</div>
+                        <div class="pm">
+                            <h3>AUTONOMOUS DRONE WITH GPS</h3>
+                            <span class="badge">ROBOTICS / AI</span>
                         </div>
                     </div>
-                    <p class="proj-desc">GPS-waypoint drone with AI-powered obstacle avoidance using OpenCV and a
-                        Raspberry Pi 4. PID-tuned flight controller, real-time telemetry, and live FPV video feed.</p>
-                    <div class="proj-tags">
-                        <span class="proj-tag">RPi4</span>
-                        <span class="proj-tag">OpenCV</span>
-                        <span class="proj-tag">PID</span>
-                        <span class="proj-tag">GPS</span>
+                    <p class="pd">This quadcopter features a Radiolink Crossflight flight controller with u-blox NEO-M8N for 
+                        precise GPS positioning and Return-to-Home, powered by brushless motors, 30A ESCs, and controlled via the
+                         FlySky FS-i6 system. 🚁</p>
+                    <div class="ptags"><span class="pt">RPi4</span><span class="pt">OpenCV</span><span
+                            class="pt">PID</span><span class="pt">LoRa RTK</span></div>
+                    <div class="pfooter">
+                        <div class="pview" onclick="mOpen('drone')">VIEW PROJECT →</div>
+                        <div class="pstatus">
+                            <div class="psdot"></div>DEPLOYED
+                        </div>
                     </div>
                 </div>
 
-                <!-- Function Generator -->
-                <div class="proj-card r delay-15" data-tilt>
-                    <div class="proj-top">
-                        <div class="proj-icon">📡</div>
-                        <div class="proj-info">
-                            <h3>FUNCTION GENERATOR</h3>
-                            <span class="proj-badge">ANALOG ELECTRONICS</span>
+                <div class="pc rv" data-tilt data-modal="funcgen">
+                    <div class="miniScope">
+                        <canvas id="scopeMini" height="38"></canvas>
+                        <span class="msl">CH1: SINE 2.5V 1kHz</span>
+                    </div>
+                    <div class="ph">
+                        <div class="pi">📡</div>
+                        <div class="pm">
+                            <h3>CUSTOM FUNCTION GENERATOR</h3>
+                            <span class="badge">ANALOG ELECTRONICS</span>
                         </div>
                     </div>
-                    <p class="proj-desc">DDS-based multi-waveform function generator capable of producing sine, square,
-                        triangle, and sawtooth waves up to 20MHz. Custom PCB design with OLED display and rotary encoder
-                        UI.</p>
-                    <div class="proj-tags">
-                        <span class="proj-tag">DDS</span>
-                        <span class="proj-tag">PCB</span>
-                        <span class="proj-tag">OLED</span>
-                        <span class="proj-tag">STM32</span>
+                    <p class="pd">Dual-channel DDS signal generator with 20MHz bandwidth. AD9833 core on custom 6-layer
+                        KiCad PCB. OLED display, rotary UI, sine/square/triangle/arbitrary waveforms.</p>
+                    <div class="ptags"><span class="pt">AD9833 DDS</span><span class="pt">STM32</span><span
+                            class="pt">KiCad</span><span class="pt">OLED</span></div>
+                    <div class="pfooter">
+                        <div class="pview" onclick="mOpen('funcgen')">VIEW PROJECT →</div>
+                        <div class="pstatus">
+                            <div class="psdot"></div>COMPLETE
+                        </div>
                     </div>
                 </div>
 
-                <!-- Robotics -->
-                <div class="proj-card r delay-2" data-tilt>
-                    <div class="proj-top">
-                        <div class="proj-icon">🦾</div>
-                        <div class="proj-info">
-                            <h3>EMG ROBOTIC ARM</h3>
-                            <span class="proj-badge">BIO-ELECTRONICS</span>
+                <div class="pc rv" data-tilt data-modal="robotics">
+                    <div class="ph">
+                        <div class="pi">🦾</div>
+                        <div class="pm">
+                            <h3>EMG ROBOTICS LAB</h3>
+                            <span class="badge">BIO-ELECTRONICS</span>
                         </div>
                     </div>
-                    <p class="proj-desc">Muscle-signal-controlled prosthetic arm reading EMG signals via surface
-                        electrodes. 6-DOF servo system with real-time signal classification using edge ML on
-                        microcontroller.</p>
-                    <div class="proj-tags">
-                        <span class="proj-tag">EMG</span>
-                        <span class="proj-tag">TinyML</span>
-                        <span class="proj-tag">6-DOF</span>
-                        <span class="proj-tag">RTOS</span>
+                    <p class="pd">Surface EMG-controlled 6-DOF robotic arm with TinyML gesture classifier on ARM
+                        Cortex-M33. 94.3% accuracy across 12 gestures at 12ms inference latency.</p>
+                    <div class="ptags"><span class="pt">TinyML</span><span class="pt">6-DOF</span><span
+                            class="pt">RTOS</span><span class="pt">ARM Cortex</span></div>
+                    <div class="pfooter">
+                        <div class="pview" onclick="mOpen('robotics')">VIEW PROJECT →</div>
+                        <div class="pstatus">
+                            <div class="psdot c-amber"></div>IN
+                            PROGRESS
+                        </div>
                     </div>
                 </div>
-
             </div>
         </section>
 
         <!-- ═══ EVENTS ═══ -->
         <section id="events">
-            <div class="sec-hdr r">
-                <span class="sec-tag">// 03 — EVENTS TIMELINE</span>
-                <h2 class="sec-title">MILESTONES</h2>
+            <div class="sec-center rv">
+                <span class="sec-tag">// 03 — MISSION LOG</span>
+                <h2 class="sec-title">EVENTS TIMELINE</h2>
                 <div class="sec-line"></div>
             </div>
-            <div class="timeline">
-
-                <div class="ev-item">
-                    <div class="ev-body">
-                        <div class="ev-date">MAR 2025</div>
-                        <div class="ev-title">CIRCUIT WARS 2025</div>
-                        <div class="ev-desc">48-hour electronics hackathon. 120 teams, 400+ participants competing to
-                            build the most innovative circuit. Our team "Voltage" swept 3 categories.</div>
+            <div class="evLine">
+                <div class="ev">
+                    <div class="evBody">
+                        <div class="evDate">MAR 2025</div>
+                        <div class="evTitle">CIRCUIT WARS — NATIONAL HACKATHON</div>
+                        <div class="evDesc">48-hour electronics hackathon. 140 teams, 500+ participants. Team NEXUS
+                            swept Embedded Systems, RF Design, and Grand Innovation simultaneously.</div>
                     </div>
-                    <div class="ev-dot green"></div>
-                    <div class="ev-spacer"></div>
+                    <div class="evNode c-green"></div>
+                    <div class="evFill"></div>
                 </div>
-
-                <div class="ev-item">
-                    <div class="ev-spacer"></div>
-                    <div class="ev-dot purple"></div>
-                    <div class="ev-body purple">
-                        <div class="ev-date">FEB 2025</div>
-                        <div class="ev-title">PCB DESIGN BOOTCAMP</div>
-                        <div class="ev-desc">3-day intensive workshop covering KiCad, Altium Designer, and industry PCB
-                            layout practices. Participants fabricated real boards in our lab.</div>
+                <div class="ev">
+                    <div class="evFill"></div>
+                    <div class="evNode c-violet"></div>
+                    <div class="evBody evBody-v">
+                        <div class="evDate">FEB 2025</div>
+                        <div class="evTitle">PCB DESIGN MASTERCLASS</div>
+                        <div class="evDesc">5-day workshop on signal integrity, impedance matching, differential pairs,
+                            and high-frequency routing. 80 engineers certified in Altium Designer.</div>
                     </div>
                 </div>
-
-                <div class="ev-item">
-                    <div class="ev-body">
-                        <div class="ev-date">JAN 2025</div>
-                        <div class="ev-title">ROBO ARENA NATIONAL FINAL</div>
-                        <div class="ev-desc">Our combat robot "SURGE" reached the national finals for the second
-                            consecutive year. 3kg class, with a custom brushless drive system and pneumatic flipper.
-                        </div>
+                <div class="ev">
+                    <div class="evBody">
+                        <div class="evDate">JAN 2025</div>
+                        <div class="evTitle">ROBO ARENA — NATIONAL FINALS</div>
+                        <div class="evDesc">Combat robot "SURGE Mk.III" reached national finals for the 3rd consecutive
+                            year. 3kg class, titanium armor, pneumatic flipper, custom brushless drive.</div>
                     </div>
-                    <div class="ev-dot blue"></div>
-                    <div class="ev-spacer"></div>
+                    <div class="evNode c-cyan"></div>
+                    <div class="evFill"></div>
                 </div>
-
-                <div class="ev-item">
-                    <div class="ev-spacer"></div>
-                    <div class="ev-dot pink"></div>
-                    <div class="ev-body pink">
-                        <div class="ev-date">DEC 2024</div>
-                        <div class="ev-title">TECH EXPO & INDUSTRY NIGHT</div>
-                        <div class="ev-desc">Annual showcase to industry partners. 6 members received internship offers
-                            on-spot from top semiconductor and defense electronics firms.</div>
+                <div class="ev">
+                    <div class="evFill"></div>
+                    <div class="evNode c-amber"></div>
+                    <div class="evBody evBody-a">
+                        <div class="evDate">DEC 2024</div>
+                        <div class="evTitle">TECH EXPO & INDUSTRY SUMMIT</div>
+                        <div class="evDesc">Attended by 12 industry partners including semiconductor and defense firms.
+                            8 members received competitive internship offers on-spot.</div>
                     </div>
                 </div>
-
-                <div class="ev-item">
-                    <div class="ev-body">
-                        <div class="ev-date">NOV 2024</div>
-                        <div class="ev-title">IoT WORKSHOP SERIES</div>
-                        <div class="ev-desc">6-session deep-dive covering MQTT, LoRa, BLE mesh networking, and cloud
-                            dashboards. 80+ members completed certification.</div>
+                <div class="ev">
+                    <div class="evBody">
+                        <div class="evDate">NOV 2024</div>
+                        <div class="evTitle">IoT MESH NETWORKING WORKSHOP</div>
+                        <div class="evDesc">6-session deep-dive into LoRa mesh, MQTT, BLE 5.0, and cloud-connected IoT.
+                            Built a live campus-wide sensor network.</div>
                     </div>
-                    <div class="ev-dot gold"></div>
-                    <div class="ev-spacer"></div>
+                    <div class="evNode c-plasma"></div>
+                    <div class="evFill"></div>
                 </div>
-
             </div>
         </section>
 
         <!-- ═══ MEMBERS ═══ -->
         <section id="members">
-            <div class="sec-hdr r">
+            <div class="sec-center rv">
                 <span class="sec-tag">// 04 — CORE TEAM</span>
-                <h2 class="sec-title">MEET THE ENGINEERS</h2>
+                <h2 class="sec-title">THE ENGINEERS</h2>
                 <div class="sec-line"></div>
             </div>
-            <div class="members-grid">
-
-                <div class="mem-card rz delay-05">
-                    <div class="mem-avatar">👨‍💻</div>
-                    <div class="mem-name">ARJUN SHARMA</div>
-                    <div class="mem-role">PRESIDENT</div>
-                    <div class="mem-skills">
-                        <span class="mem-skill">FPGA</span>
-                        <span class="mem-skill">VHDL</span>
-                        <span class="mem-skill">RF</span>
+            <div class="memGrid">
+                <div class="mc rvz">
+                    <div class="ma ma-g1">
+                        <div class="ma-ring"></div>👨‍💻
                     </div>
-                    <div class="mem-socials">
-                        <div class="soc-btn" title="GitHub">GH</div>
-                        <div class="soc-btn" title="LinkedIn">IN</div>
-                        <div class="soc-btn" title="Email">@</div>
-                    </div>
-                </div>
-
-                <div class="mem-card rz delay-1">
-                    <div class="mem-avatar purple-pink">👩‍💻
-                    </div>
-                    <div class="mem-name">PRIYA NAIR</div>
-                    <div class="mem-role">VICE PRESIDENT</div>
-                    <div class="mem-skills">
-                        <span class="mem-skill">IoT</span>
-                        <span class="mem-skill">PCB</span>
-                        <span class="mem-skill">ML</span>
-                    </div>
-                    <div class="mem-socials">
+                    <div class="mn">ARJUN SHARMA</div>
+                    <div class="mr">LAB DIRECTOR</div>
+                    <div class="mtags"><span class="mtag">FPGA</span><span class="mtag">VHDL</span><span
+                            class="mtag">RF</span></div>
+                    <div class="msoc">
                         <div class="soc-btn">GH</div>
                         <div class="soc-btn">IN</div>
-                        <div class="soc-btn">@</div>
+                        <div class="soc-btn">✉</div>
                     </div>
                 </div>
-
-                <div class="mem-card rz delay-15">
-                    <div class="mem-avatar green-blue">🔧</div>
-                    <div class="mem-name">KARAN MEHTA</div>
-                    <div class="mem-role">TECH LEAD</div>
-                    <div class="mem-skills">
-                        <span class="mem-skill">ARM</span>
-                        <span class="mem-skill">RTOS</span>
-                        <span class="mem-skill">C++</span>
+                <div class="mc rvz">
+                    <div class="ma ma-g2">
+                        <div class="ma-ring"></div>👩‍💻
                     </div>
-                    <div class="mem-socials">
+                    <div class="mn">PRIYA NAIR</div>
+                    <div class="mr">SYSTEMS ENGINEER</div>
+                    <div class="mtags"><span class="mtag">IoT</span><span class="mtag">ML Edge</span><span
+                            class="mtag">PCB</span></div>
+                    <div class="msoc">
                         <div class="soc-btn">GH</div>
                         <div class="soc-btn">IN</div>
-                        <div class="soc-btn">@</div>
+                        <div class="soc-btn">✉</div>
                     </div>
                 </div>
-
-                <div class="mem-card rz delay-2">
-                    <div class="mem-avatar gold-pink">⚡</div>
-                    <div class="mem-name">ANANYA IYER</div>
-                    <div class="mem-role">ROBOTICS HEAD</div>
-                    <div class="mem-skills">
-                        <span class="mem-skill">ROS</span>
-                        <span class="mem-skill">CV</span>
-                        <span class="mem-skill">PID</span>
+                <div class="mc rvz">
+                    <div class="ma ma-g3">
+                        <div class="ma-ring"></div>🔧
                     </div>
-                    <div class="mem-socials">
+                    <div class="mn">KARAN MEHTA</div>
+                    <div class="mr">FIRMWARE ARCHITECT</div>
+                    <div class="mtags"><span class="mtag">ARM</span><span class="mtag">RTOS</span><span
+                            class="mtag">C/C++</span></div>
+                    <div class="msoc">
                         <div class="soc-btn">GH</div>
                         <div class="soc-btn">IN</div>
-                        <div class="soc-btn">@</div>
+                        <div class="soc-btn">✉</div>
                     </div>
                 </div>
-
+                <div class="mc rvz">
+                    <div class="ma ma-g4">
+                        <div class="ma-ring"></div>⚡
+                    </div>
+                    <div class="mn">ANANYA IYER</div>
+                    <div class="mr">ROBOTICS DIVISION</div>
+                    <div class="mtags"><span class="mtag">ROS2</span><span class="mtag">CV</span><span
+                            class="mtag">PID</span></div>
+                    <div class="msoc">
+                        <div class="soc-btn">GH</div>
+                        <div class="soc-btn">IN</div>
+                        <div class="soc-btn">✉</div>
+                    </div>
+                </div>
             </div>
         </section>
 
         <!-- ═══ JOIN ═══ -->
         <section id="join">
-            <div class="sec-hdr r">
-                <span class="sec-tag">// 05 — RECRUIT</span>
-                <h2 class="sec-title">JOIN THE CIRCUIT</h2>
+            <div class="sec-center rv">
+                <span class="sec-tag">// 05 — RECRUITMENT</span>
+                <h2 class="sec-title">JOIN THE LAB</h2>
                 <div class="sec-line"></div>
             </div>
-            <div class="form-wrap r">
-                <div class="form-row">
-                    <label class="form-lbl" for="full-name">// FULL NAME</label>
-                    <input type="text" id="full-name" class="form-in" placeholder="ENTER_YOUR_NAME_">
+            <div class="joinWrap rv">
+                <div class="vMeter" id="voltMeter">
+                    <div class="vVal">48.0V</div>
+                    <div class="vSeg">
+                        <div class="vsb lit"></div>
+                        <div class="vsb lit"></div>
+                        <div class="vsb lit"></div>
+                        <div class="vsb lit"></div>
+                        <div class="vsb"></div>
+                        <div class="vsb"></div>
+                    </div>
                 </div>
-                <div class="form-row">
-                    <label class="form-lbl" for="email">// EMAIL ADDRESS</label>
-                    <input type="email" id="email" class="form-in" placeholder="YOUR@COLLEGE.EDU_">
-                </div>
-                <div class="form-row">
-                    <label class="form-lbl" for="year-select">// YEAR OF STUDY</label>
-                    <select id="year-select" class="form-sel" title="Year of Study">
-                        <option value="">SELECT_YEAR_</option>
-                        <option>1st Year</option>
-                        <option>2nd Year</option>
-                        <option>3rd Year</option>
-                        <option>4th Year</option>
+                <div class="frow"><label class="flbl" for="userName">// IDENTIFICATION</label><input type="text"
+                        class="fin" id="userName" placeholder="ENTER_YOUR_NAME_"></div>
+                <div class="frow"><label class="flbl" for="userEmail">// SECURE CHANNEL</label><input type="email"
+                        class="fin" id="userEmail" placeholder="your@college.edu_"></div>
+                <div class="frow"><label class="flbl" for="userYear">// ACCESS LEVEL</label>
+                    <select class="fsel" id="userYear" title="Select Year of Study">
+                        <option value="">SELECT_YEAR_OF_STUDY_</option>
+                        <option>1st Year — Initiate</option>
+                        <option>2nd Year — Operative</option>
+                        <option>3rd Year — Specialist</option>
+                        <option>4th Year — Senior Engineer</option>
                     </select>
                 </div>
-                <div class="form-row">
-                    <label class="form-lbl" for="domain-select">// DOMAIN OF INTEREST</label>
-                    <select id="domain-select" class="form-sel" title="Domain of Interest">
-                        <option value="">SELECT_DOMAIN_</option>
-                        <option>Embedded Systems</option>
-                        <option>PCB Design</option>
+                <div class="frow"><label class="flbl" for="userDomain">// PRIMARY DOMAIN</label>
+                    <select class="fsel" id="userDomain" title="Select Specialization">
+                        <option value="">SELECT_SPECIALIZATION_</option>
+                        <option>Embedded Systems & Firmware</option>
+                        <option>PCB Design & Hardware</option>
                         <option>Robotics & Automation</option>
-                        <option>IoT & Wireless</option>
-                        <option>Signal Processing</option>
+                        <option>IoT & Wireless Communication</option>
+                        <option>Signal Processing & RF</option>
                         <option>Power Electronics</option>
                         <option>Machine Learning on Edge</option>
                     </select>
                 </div>
-                <div class="form-row">
-                    <label class="form-lbl" for="why-join">// WHY THE CIRCUIT BREAKERS?</label>
-                    <textarea id="why-join" class="form-ta" placeholder="TELL US YOUR MOTIVATION..."></textarea>
-                </div>
-                <button class="form-sub" onclick="submitForm(this,event)">TRANSMIT APPLICATION ⚡</button>
+                <div class="frow"><label class="flbl" for="userMessage">// MOTIVATION SIGNAL</label><textarea
+                        class="fta" id="userMessage" placeholder="TRANSMIT YOUR INTENT..."></textarea></div>
+                <button class="fsub" id="joinBtn" onclick="formSubmit(this,event)">TRANSMIT APPLICATION ⚡</button>
             </div>
         </section>
 
     </main>
 
     <footer>
-        <div class="led-row">
-            <div class="led led-g"></div>
-            <div class="led-label">SYSTEMS NOMINAL</div>
-            <div class="led led-r footer-led-r"></div>
-            <div class="led-label">INNOVATION ACTIVE</div>
+        <div class="fLeds">
+            <div class="f-led f-led-g c-green"></div>SYSTEMS NOMINAL
+            <div class="f-led f-led-r c-red"></div>INNOVATION ACTIVE
+            <div class="f-led f-led-c c-cyan"></div>TRANSMITTING
         </div>
-        ⚡ THE CIRCUIT BREAKERS © 2025 &nbsp;|&nbsp; COLLEGE OF ENGINEERING &nbsp;|&nbsp; POWERED BY CURIOSITY & 5V
+        ⚡ THE CIRCUIT BREAKER © 2025 &nbsp;│&nbsp; COLLEGE OF ENGINEERING &nbsp;│&nbsp; POWERED BY CURIOSITY & 48V
         <br><br>
-        <span class="footer-hidden-msg">[ HIDDEN: TYPE "OHM123" ANYWHERE FOR A SURPRISE
-            ]</span>
+        <span class="classified-notice">[ CLASSIFIED: TYPE "OHM123" TO ACCESS THE ARCHIVE ]</span>
     </footer>
 
-    <script src="script.js" defer></script>
+    <script src="script.js"></script>
 </body>
 
 </html>
